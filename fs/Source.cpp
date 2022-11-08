@@ -137,11 +137,19 @@ void check_for_changes() {
 						current_line_old++;
 					}
 					compare_old.close();
-					if (file.new_name != file.old_name) {
-						ImGui::TextColored(ImVec4(255, 0, 0, 255), "File Name changed from %s to %s", file.old_name.c_str(), file.new_name.c_str());
+					if (file.new_name != file.old_name && file.new_size != file.old_size && file.newid != file.oldid) {
+						ImGui::TextColored(ImVec4(255, 0, 0, 255), "[*] New file (%s)", file.new_name.c_str());
+					}
+					else {
+						if (file.new_name != file.old_name) {
+							ImGui::TextColored(ImVec4(255, 0, 0, 255), "[*] File Name changed from %s to %s", file.old_name.c_str(), file.new_name.c_str());
+						}
 					}
 					if (file.new_size != file.old_size) {
-						ImGui::TextColored(ImVec4(255, 0, 0, 255), "(%s) File Size changed from %s Bytes to %s Bytes ", file.old_name.c_str(), file.old_size.c_str(), file.new_size.c_str());
+						ImGui::TextColored(ImVec4(255, 0, 0, 255), "[*] (%s) File Size changed from %s Bytes to %s Bytes ", file.new_name.c_str(), file.old_size.c_str(), file.new_size.c_str());
+					}
+					if (file.newid != file.oldid) {
+						ImGui::TextColored(ImVec4(255, 0, 0, 255), "[*] (%s) FileID changed from %s to %s", file.new_name.c_str(), file.oldid.c_str(), file.newid.c_str());
 					}
 		}
 	}
@@ -160,39 +168,45 @@ void scan_dir() {
     di = opendir(globals.path.c_str()); //specify the directory name
     if (di)
     {
-        while ((dir = readdir(di)) != NULL)
-        {
-			std::ifstream in_file(dir->d_name, std::ios::binary);
-			in_file.seekg(0, std::ios::end);
-			int file_size = in_file.tellg();
-			coloredText();		
-			ImGui::Selectable(dir->d_name);
-			std::string file = dir->d_name;
-			save_locally.open("fs_data//" + file + "_data.txt");
-			int file_id = file_size * 3 + rand() % 1 + 50;
-			save_locally << dir->d_name << "\n" << file_id << "\n" << file_size;
-			save_locally.close();
-			if (ImGui::BeginPopupContextItem()) // <-- use last item id as popup id
+		
+			while ((dir = readdir(di)) != NULL)
 			{
-				in_file.close();
-				ImGui::Text("%s info:",dir->d_name);
-				ImGui::Text("type: %d",dir->d_type);
-				ImGui::Text("File Position: %ld", dir->d_off);
-				ImGui::Text("File Size: %d Bytes", file_size);
-				if (ImGui::Button("Close"))
-					ImGui::CloseCurrentPopup();
-				ImGui::EndPopup();
+				std::ifstream in_file(dir->d_name, std::ios::binary);
+				in_file.seekg(0, std::ios::end);
+				int file_size = in_file.tellg();
 
+				coloredText();
+				ImGui::Selectable(dir->d_name);
+
+
+				std::string file = dir->d_name;
+				save_locally.open("fs_data//" + file + "_data.txt");
+				int file_id = file_size * 3 + rand() % 1 + 50;
+				save_locally << dir->d_name << "\n" << file_id << "\n" << file_size;
+				save_locally.close();
+				if (ImGui::BeginPopupContextItem()) // <-- use last item id as popup id
+				{
+					in_file.close();
+					ImGui::Text("%s info:", dir->d_name);
+					ImGui::Text("type: %d", dir->d_type);
+					ImGui::Text("File Position: %ld", dir->d_off);
+					ImGui::Text("File Size: %d Bytes", file_size);
+					if (ImGui::Button("Close"))
+						ImGui::CloseCurrentPopup();
+					ImGui::EndPopup();
+
+				}
+
+				times_checked++;
+				if (ImGui::IsItemHovered())
+					ImGui::SetTooltip(dir->d_name);
+				if (dir->d_type != 32768) {
+					ImGui::SameLine();
+					ImGui::TextColored(ImVec4(255, 0, 0, 255), "<- folder/unkown");
+				}
 			}
-			
-			times_checked++;
-			if (ImGui::IsItemHovered())
-				ImGui::SetTooltip(dir->d_name);
-			if (dir->d_type != 32768) {
-				ImGui::SameLine();
-				ImGui::TextColored(ImVec4(255, 0, 0, 255),"<- folder/unkown");
-			}
-        }	
+
+
         closedir(di);
 		ImGui::Text("==============CHANGES==============");
 		if (save_changes_old_count == 0) {
