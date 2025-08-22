@@ -158,9 +158,9 @@ void scan_dir() {
 	std::ofstream save_locally;
 	CreateDirectory("fs_data", NULL);
 	CreateDirectory("fs_data//old_data", NULL);
-	ImGui::Text("Scanning: %s", globals.path.c_str());
-	ImGui::Text("Alerts: %d", alert_amount);
-	ImGui::Text("Debug: %d", save_changes_old_count);
+	ImGui::Text("scanning: %s", globals.path.c_str());
+	ImGui::Text("alerts: %d", alert_amount);
+	ImGui::Text("debug: %d", save_changes_old_count);
     DIR* di;
     struct dirent* dir;
     di = opendir(globals.path.c_str()); //specify the directory name
