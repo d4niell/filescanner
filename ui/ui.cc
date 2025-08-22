@@ -4,7 +4,14 @@
 #include "../imgui/imgui_internal.h"
 #include "../fs/Source.h"
 #include <filesystem>
+
+
 void ui::render() {
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.Colors[ImGuiCol_WindowBg] = ImVec4(36.0f / 255.0f, 37.0f / 255.0f, 42.0f / 255.0f, 1.0f); // Example: change window background
+    style.FrameRounding = 10.0f;
+    style.Colors[ImGuiCol_Button] = ImVec4(0.2f, 0.5f, 0.7f, 1.0f);
     if (!globals.active) return;
     ImGui::SetNextWindowPos(ImVec2(window_pos.x, window_pos.y), ImGuiCond_Once);
     ImGui::SetNextWindowSize(ImVec2(window_size.x, window_size.y));

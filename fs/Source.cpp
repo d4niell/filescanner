@@ -10,7 +10,6 @@
 #include <fstream>
 #include <random>
 namespace fs = std::filesystem;
-int times_checked = 0;
 int i = 0;
 int alert_amount = 0;
 int save_changes_old_count = 0;
@@ -160,7 +159,6 @@ void scan_dir() {
 	CreateDirectory("fs_data", NULL);
 	CreateDirectory("fs_data//old_data", NULL);
 	ImGui::Text("Scanning: %s", globals.path.c_str());
-	ImGui::Text("%d times checked", times_checked);
 	ImGui::Text("Alerts: %d", alert_amount);
 	ImGui::Text("Debug: %d", save_changes_old_count);
     DIR* di;
@@ -196,8 +194,6 @@ void scan_dir() {
 					ImGui::EndPopup();
 
 				}
-
-				times_checked++;
 				if (ImGui::IsItemHovered())
 					ImGui::SetTooltip(dir->d_name);
 				if (dir->d_type != 32768) {
@@ -208,7 +204,7 @@ void scan_dir() {
 
 
         closedir(di);
-		ImGui::Text("==============CHANGES==============");
+		ImGui::Text("Changes:");
 		if (save_changes_old_count == 0) {
 			save_locally.close();
 			save_changes_old();
