@@ -1,3 +1,0 @@
-FileScanner.exe
-47
--1
